@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_white_corner8"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tv_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        tools:text="title"/>
+
+    <FrameLayout
+        android:id="@+id/fl_dialog_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp">
+
+    </FrameLayout>
+
+
+    <View
+        android:id="@+id/view_dialog_divide_content"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
+
+        <TextView
+            android:id="@+id/tv_dialog_negative"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/selector_dialog_btn"
+            android:gravity="center"
+            android:visibility="gone"
+            tools:text="negative"/>
+
+        <View
+            android:id="@+id/view_dialog_divide_btn0"
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/black"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_dialog_neutral"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/selector_dialog_btn"
+            android:gravity="center"
+            android:visibility="gone"
+            tools:text="neutral"/>
+
+        <View
+            android:id="@+id/view_dialog_divide_btn1"
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/black"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_dialog_positive"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/selector_dialog_btn"
+            android:gravity="center"
+            android:visibility="gone"
+            tools:text="positive"/>
+    </LinearLayout>
+
+</LinearLayout>
