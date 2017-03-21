@@ -1,6 +1,7 @@
 package com.blankj.common.ui.dialog;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 
 import com.blankj.common.R;
 
@@ -14,11 +15,10 @@ import com.blankj.common.R;
  */
 public class BaseAlertDialog extends BaseDialog {
 
-
     @Override
     protected void build(Builder builder) {
-        builder.setTitle("wode");
-
+        builder.setBackgroundColor(Color.WHITE)
+                .setTitle("wode");
     }
 
     @Override
