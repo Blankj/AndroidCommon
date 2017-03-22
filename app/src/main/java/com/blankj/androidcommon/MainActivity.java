@@ -1,9 +1,9 @@
 package com.blankj.androidcommon;
 
+import android.app.Dialog;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 
 import com.blankj.common.ui.dialog.BaseAlertDialog;
 import com.blankj.common.ui.dialog.BaseDialog;
@@ -37,7 +37,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 BaseAlertDialog baseAlertDialog = new BaseAlertDialog();
-                baseAlertDialog.show(getSupportFragmentManager(),"ha");
+                baseAlertDialog.setOnCreateBuildListener(new BaseAlertDialog.OnCreateBuilderListener() {
+                    @Override
+                    public void onCreateBuilder(BaseDialog.Builder builder) {
+                        builder.setPositiveButton("ok", new BaseDialog.OnClickListener() {
+                            @Override
+                            public void onClick(Dialog dialog) {
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("cancel", new BaseDialog.OnClickListener() {
+                            @Override
+                            public void onClick(Dialog dialog) {
+                                dialog.dismiss();
+                            }
+                        });
+                    }
+                });
+                baseAlertDialog.show();
             }
         }, 1000);
 

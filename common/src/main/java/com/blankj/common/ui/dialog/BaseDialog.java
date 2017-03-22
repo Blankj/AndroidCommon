@@ -6,27 +6,23 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IntDef;
-import android.support.annotation.LayoutRes;
+import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.blankj.common.R;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * <pre>
@@ -43,90 +39,90 @@ public abstract class BaseDialog extends DialogFragment {
     public static final byte NEGATIVE = -2;
     public static final byte NEUTRAL = -3;
 
-    public static final int START = -1;
-    public static final int CENTER = -2;
-    public static final int END = -3;
-
-    @IntDef({START, CENTER, END})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Gravity {
-    }
-
     private Context mContext;
-    protected static final int DEFAULT_COLOR = -1; //default
-    private LinearLayout llDialog;
-    private TextView tvDialogTitle;
-    private TextView tvDialogNegative;
-    private TextView tvDialogNeutral;
-
-
-    private TextView tvDialogPositive;
-    private FrameLayout flDialogContent;
+    private Window window;
+    private Dialog dialog;
     private View dialogView;
-
+    private TextView tvDialogTitle;
+    private FrameLayout flDialogContent;
+    private View viewDivide0;
     private View contentView;
-    private CharSequence mTitle;
-    private CharSequence mPositiveButtonText;
-    private OnClickListener mPositiveButtonListener;
-    private CharSequence mNegativeButtonText;
-    private OnClickListener mNegativeButtonListener;
-    private CharSequence mNeutralButtonText;
-    private OnClickListener mNeutralButtonListener;
+    private TextView tvDialogNegative;
+    private View viewDivide1;
+    private TextView tvDialogNeutral;
+    private View viewDivide2;
+    private TextView tvDialogPositive;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         mContext = getActivity();
         dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_base, null);
-        llDialog = (LinearLayout) dialogView.findViewById(R.id.ll_dialog);
         tvDialogTitle = (TextView) dialogView.findViewById(R.id.tv_dialog_title);
         flDialogContent = (FrameLayout) dialogView.findViewById(R.id.fl_dialog_content);
-
-
+        viewDivide0 = dialogView.findViewById(R.id.view_dialog_divide0);
         tvDialogNegative = (TextView) dialogView.findViewById(R.id.tv_dialog_negative);
+        viewDivide1 = dialogView.findViewById(R.id.view_dialog_divide1);
         tvDialogNeutral = (TextView) dialogView.findViewById(R.id.tv_dialog_neutral);
+        viewDivide2 = dialogView.findViewById(R.id.view_dialog_divide2);
         tvDialogPositive = (TextView) dialogView.findViewById(R.id.tv_dialog_positive);
 
         contentView = LayoutInflater.from(mContext).inflate(bindContentView(), null);
         flDialogContent.addView(contentView);
-
-        AlertDialog alertDialog = new AlertDialog.Builder(mContext)
-                .setView(dialogView)
-                .setCancelable(false)
-                .create();
-
-        Builder builder = new Builder();
-        build(builder);
-
-        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        Window window = alertDialog.getWindow();
-        window.setBackgroundDrawableResource(R.drawable.shape_white_corner8);
-
-        return alertDialog;
+        build(new Builder());
+        setContentView(contentView);
+        return dialog;
     }
-
-    protected abstract void build(Builder builder);
 
     protected abstract int bindContentView();
 
+    protected abstract void build(Builder builder);
+
+    protected abstract void setContentView(View contentView);
+
     public class Builder {
 
-        protected Builder setBackGround(Drawable background) {
-            llDialog.setBackground(background);
+        Builder() {
+            dialog = new AlertDialog.Builder(mContext)
+                    .setView(dialogView)
+                    .create();
+            window = dialog.getWindow();
+            dialog.setContentView(dialogView);
+        }
+
+        public Builder setGravity(int gravity) {
+            window.setGravity(gravity);
             return this;
         }
 
-        protected Builder setBackgroundColor(@ColorInt int color) {
-            llDialog.setBackgroundColor(color);
+        public Builder setSize(@FloatRange(from = 0, to = 1, fromInclusive = false) float widthScale,
+                                  @FloatRange(from = 0, to = 1, fromInclusive = false) float heightScale) {
+            WindowManager.LayoutParams lp = window.getAttributes();
+            WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+            DisplayMetrics dm = new DisplayMetrics();
+            windowManager.getDefaultDisplay().getMetrics(dm);
+            lp.width = (int) (dm.widthPixels * widthScale);
+            lp.height = (int) (dm.heightPixels * heightScale);
             return this;
         }
 
-        protected Builder setBackgroundResource(@DrawableRes int resId) {
-            llDialog.setBackgroundResource(resId);
+        public Builder setAlpha(@FloatRange(from = 0, to = 1, fromInclusive = false) float alpha) {
+            WindowManager.LayoutParams lp = window.getAttributes();
+            lp.alpha = alpha;
             return this;
         }
 
-        protected Builder setTitle(CharSequence title) {
+        public Builder setBackGround(Drawable drawable) {
+            window.setBackgroundDrawable(drawable);
+            return this;
+        }
+
+        public Builder setBackgroundDrawableResource(@DrawableRes int resId) {
+            window.setBackgroundDrawableResource(resId);
+            return this;
+        }
+
+        public Builder setTitle(CharSequence title) {
             if (!TextUtils.isEmpty(title)) {
                 tvDialogTitle.setVisibility(View.VISIBLE);
                 tvDialogTitle.setText(title);
@@ -134,102 +130,109 @@ public abstract class BaseDialog extends DialogFragment {
             return this;
         }
 
-        protected Builder setTitle(CharSequence title, @Gravity int gravity) {
+        public Builder setTitle(CharSequence title, int gravity) {
             if (!TextUtils.isEmpty(title)) {
                 tvDialogTitle.setVisibility(View.VISIBLE);
                 tvDialogTitle.setText(title);
-                switch (gravity) {
-                    case START:
-                        tvDialogTitle.setGravity(android.view.Gravity.START);
-                        break;
-                    case CENTER:
-                        tvDialogTitle.setGravity(android.view.Gravity.CENTER);
-                        break;
-                    case END:
-                        tvDialogTitle.setGravity(android.view.Gravity.CENTER);
-                        break;
-                }
+                tvDialogTitle.setGravity(gravity);
             }
             return this;
         }
 
-        protected Builder setPositiveButton(@StringRes int textId, final OnClickListener listener) {
+        public Builder setDivide0(@ColorInt int color) {
+            viewDivide0.setVisibility(View.VISIBLE);
+            viewDivide0.setBackgroundColor(color);
+            return this;
+        }
+
+        public Builder setPositiveButton(@StringRes int textId, final OnClickListener listener) {
             return setPositiveButton(mContext.getText(textId), listener);
         }
 
-        protected Builder setPositiveButton(CharSequence text, OnClickListener listener) {
+        public Builder setPositiveButton(CharSequence text, OnClickListener listener) {
             if (!TextUtils.isEmpty(text)) {
                 setButton(POSITIVE, text, listener);
             }
             return this;
         }
 
-        protected Builder setNegativeButton(@StringRes int textId, OnClickListener listener) {
+        public Builder setDivide1(@ColorInt int color) {
+            viewDivide1.setVisibility(View.VISIBLE);
+            viewDivide1.setBackgroundColor(color);
+            return this;
+        }
+
+        public Builder setNegativeButton(@StringRes int textId, OnClickListener listener) {
             return setNegativeButton(mContext.getText(textId), listener);
         }
 
-        protected Builder setNegativeButton(CharSequence text, OnClickListener listener) {
+        public Builder setNegativeButton(CharSequence text, OnClickListener listener) {
             if (!TextUtils.isEmpty(text)) {
                 setButton(NEGATIVE, text, listener);
             }
             return this;
         }
 
-        protected Builder setNeutralButton(@StringRes int textId, OnClickListener listener) {
+        public Builder setDivide2(@ColorInt int color) {
+            viewDivide2.setVisibility(View.VISIBLE);
+            viewDivide2.setBackgroundColor(color);
+            return this;
+        }
+
+        public Builder setNeutralButton(@StringRes int textId, OnClickListener listener) {
             return setNeutralButton(mContext.getText(textId), listener);
         }
 
-        protected Builder setNeutralButton(CharSequence text, OnClickListener listener) {
+        public Builder setNeutralButton(CharSequence text, OnClickListener listener) {
             if (!TextUtils.isEmpty(text)) {
                 setButton(NEUTRAL, text, listener);
             }
             return this;
         }
-
-        protected Builder setContentView(View contentView) {
-            return this;
-        }
     }
 
     private void setButton(int which, CharSequence text, final OnClickListener listener) {
+        TextView tvWhich;
         switch (which) {
+            default:
             case POSITIVE:
-                tvDialogTitle.setVisibility(View.VISIBLE);
-                tvDialogPositive.setText(text);
-                if (listener == null) return;
-                tvDialogPositive.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listener.onClick(getDialog());
-                    }
-                });
+                tvWhich = tvDialogPositive;
                 break;
             case NEGATIVE:
-                tvDialogNegative.setVisibility(View.VISIBLE);
-                tvDialogNegative.setText(text);
-                if (listener == null) return;
-                tvDialogNegative.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listener.onClick(getDialog());
-                    }
-                });
+                tvWhich = tvDialogNegative;
                 break;
             case NEUTRAL:
-                tvDialogNeutral.setVisibility(View.VISIBLE);
-                tvDialogNeutral.setText(text);
-                if (listener == null) return;
-                tvDialogNeutral.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listener.onClick(getDialog());
-                    }
-                });
+                tvWhich = tvDialogNeutral;
                 break;
         }
+        tvWhich.setVisibility(View.VISIBLE);
+        tvWhich.setText(text);
+        if (listener == null) return;
+        tvWhich.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onClick(dialog);
+            }
+        });
+    }
+
+    protected View getDialogView() {
+        return dialogView;
+    }
+
+    protected View getContentView() {
+        return contentView;
+    }
+
+    protected Window getWindow() {
+        return window;
     }
 
     public interface OnClickListener {
         void onClick(Dialog dialog);
+    }
+
+    protected void show(String tag) {
+        show(getActivity().getSupportFragmentManager(), tag);
     }
 }

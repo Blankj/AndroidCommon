@@ -1,7 +1,8 @@
 package com.blankj.common.ui.dialog;
 
-import android.content.DialogInterface;
 import android.graphics.Color;
+import android.view.View;
+import android.widget.TextView;
 
 import com.blankj.common.R;
 
@@ -15,10 +16,11 @@ import com.blankj.common.R;
  */
 public class BaseAlertDialog extends BaseDialog {
 
-    @Override
-    protected void build(Builder builder) {
-        builder.setBackgroundColor(Color.WHITE)
-                .setTitle("wode");
+    private TextView tvAlertMessage;
+    private OnCreateBuilderListener mListener;
+
+    public void setOnCreateBuildListener(OnCreateBuilderListener listener) {
+        mListener = listener;
     }
 
     @Override
@@ -26,4 +28,27 @@ public class BaseAlertDialog extends BaseDialog {
         return R.layout.dialog_alert;
     }
 
+    @Override
+    protected void build(BaseDialog.Builder builder) {
+        if (mListener != null) {
+            mListener.onCreateBuilder(builder);
+        }
+        builder.setBackgroundDrawableResource(R.drawable.shape_dialog)
+                .setAlpha(0.6f)
+                .setDivide0(Color.WHITE);
+    }
+
+    public interface OnCreateBuilderListener {
+        void onCreateBuilder(BaseDialog.Builder builder);
+    }
+
+    @Override
+    protected void setContentView(View contentView) {
+        tvAlertMessage = (TextView) contentView.findViewById(R.id.tv_alert_message);
+        tvAlertMessage.setText("message");
+    }
+
+    public void show() {
+        super.show("BaseAlertDialog");
+    }
 }
