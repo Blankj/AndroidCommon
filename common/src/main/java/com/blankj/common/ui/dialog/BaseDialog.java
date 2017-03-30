@@ -13,22 +13,20 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.blankj.common.R;
+import com.ecarx.thememanager.R;
 
 /**
  * <pre>
  *     author: Blankj
  *     blog  : http://blankj.com
- *     time  : 2017/03/15
+ *     time  : 2017/03/29
  *     desc  :
  * </pre>
  */
@@ -67,14 +65,14 @@ public abstract class BaseDialog extends DialogFragment {
         viewDivide2 = dialogView.findViewById(R.id.view_dialog_divide2);
         tvDialogPositive = (TextView) dialogView.findViewById(R.id.tv_dialog_positive);
 
-        contentView = LayoutInflater.from(mContext).inflate(bindContentView(), null);
+        contentView = LayoutInflater.from(mContext).inflate(bindContentLayout(), null);
         flDialogContent.addView(contentView);
         build(new Builder());
         setContentView(contentView);
         return dialog;
     }
 
-    protected abstract int bindContentView();
+    protected abstract int bindContentLayout();
 
     protected abstract void build(Builder builder);
 
@@ -90,13 +88,8 @@ public abstract class BaseDialog extends DialogFragment {
             dialog.setContentView(dialogView);
         }
 
-        public Builder setGravity(int gravity) {
-            window.setGravity(gravity);
-            return this;
-        }
-
         public Builder setSize(@FloatRange(from = 0, to = 1, fromInclusive = false) float widthScale,
-                                  @FloatRange(from = 0, to = 1, fromInclusive = false) float heightScale) {
+                               @FloatRange(from = 0, to = 1, fromInclusive = false) float heightScale) {
             WindowManager.LayoutParams lp = window.getAttributes();
             WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
             DisplayMetrics dm = new DisplayMetrics();
@@ -106,9 +99,46 @@ public abstract class BaseDialog extends DialogFragment {
             return this;
         }
 
-        public Builder setAlpha(@FloatRange(from = 0, to = 1, fromInclusive = false) float alpha) {
+        public Builder setWidth(@FloatRange(from = 0, to = 1, fromInclusive = false) float widthScale) {
             WindowManager.LayoutParams lp = window.getAttributes();
-            lp.alpha = alpha;
+            WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+            DisplayMetrics dm = new DisplayMetrics();
+            windowManager.getDefaultDisplay().getMetrics(dm);
+            lp.width = (int) (dm.widthPixels * widthScale);
+            return this;
+        }
+
+        public Builder setHeight(@FloatRange(from = 0, to = 1, fromInclusive = false) float heightScale) {
+            WindowManager.LayoutParams lp = window.getAttributes();
+            WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+            DisplayMetrics dm = new DisplayMetrics();
+            windowManager.getDefaultDisplay().getMetrics(dm);
+            lp.height = (int) (dm.heightPixels * heightScale);
+            return this;
+        }
+
+        public Builder setWidth(int width) {
+            window.getAttributes().width = width;
+            return this;
+        }
+
+        public Builder setHeight(int height) {
+            window.getAttributes().height = height;
+            return this;
+        }
+
+        public Builder setGravity(int gravity) {
+            window.setGravity(gravity);
+            return this;
+        }
+
+        public Builder setCanceledOnTouchOutside(boolean cancel){
+            dialog.setCanceledOnTouchOutside(cancel);
+            return this;
+        }
+
+        public Builder setAlpha(@FloatRange(from = 0, to = 1, fromInclusive = false) float alpha) {
+            window.getAttributes().alpha = alpha;
             return this;
         }
 

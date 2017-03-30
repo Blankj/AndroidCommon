@@ -24,11 +24,11 @@ public abstract class BaseActivity extends AppCompatActivity
     /**
      * 是否全屏
      */
-    protected boolean isFullScreen      = false;
+    private boolean isFullScreen = false;
     /**
      * 是否沉浸状态栏
      */
-    protected boolean isSteepStatusBar  = false;
+    private boolean isSteepStatusBar = false;
     /**
      * 当前Activity渲染的视图View
      */
@@ -36,12 +36,15 @@ public abstract class BaseActivity extends AppCompatActivity
     /**
      * 上次点击时间
      */
-    protected long lastClick = 0;
+    private long lastClick = 0;
+
+    protected BaseActivity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
+            mActivity = this;
             Bundle bundle = getIntent().getExtras();
             initData(bundle);
             contentView = LayoutInflater.from(this).inflate(bindLayout(), null);
@@ -65,38 +68,39 @@ public abstract class BaseActivity extends AppCompatActivity
         }
     }
 
+
     /**
      * 初始化数据
      *
      * @param bundle 从上个Activity传递过来的bundle
      */
-    abstract void initData(Bundle bundle);
+    public abstract void initData(Bundle bundle);
 
     /**
      * 绑定布局
      *
      * @return 布局Id
      */
-    abstract int bindLayout();
+    public abstract int bindLayout();
 
     /**
      * 初始化view
      */
-    abstract void initView(final View view);
+    public abstract void initView(final View view);
 
     /**
      * 业务操作
      *
      * @param context 上下文
      */
-    abstract void doBusiness(Context context);
+    public abstract void doBusiness(Context context);
 
     /**
      * 视图点击事件
      *
      * @param view 视图
      */
-    abstract void onWidgetClick(View view);
+    public abstract void onWidgetClick(View view);
 
     /**
      * 判断是否快速点击
@@ -105,7 +109,7 @@ public abstract class BaseActivity extends AppCompatActivity
      */
     private boolean isFastClick() {
         long now = System.currentTimeMillis();
-        if (now - lastClick >= 500) {
+        if (now - lastClick >= 200) {
             lastClick = now;
             return false;
         }
@@ -115,54 +119,6 @@ public abstract class BaseActivity extends AppCompatActivity
     @Override
     public void onClick(View view) {
         if (!isFastClick()) onWidgetClick(view);
-    }
-
-    /**
-     * 页面跳转
-     *
-     * @param clz 要跳转的Activity类
-     */
-    public void startActivity(Class<?> clz) {
-        startActivity(clz, null);
-    }
-
-    /**
-     * 携带数据的页面跳转
-     *
-     * @param clz    要跳转的Activity类
-     * @param bundle bundle
-     */
-    public void startActivity(Class<?> clz, Bundle bundle) {
-        Intent intent = new Intent(this, clz);
-        if (bundle != null) {
-            intent.putExtras(bundle);
-        }
-        startActivity(intent);
-    }
-
-    /**
-     * 页面跳转并有请求值
-     *
-     * @param clz         要跳转的Activity类
-     * @param requestCode 请求值
-     */
-    public void startActivityForResult(Class<?> clz, int requestCode) {
-        startActivityForResult(clz, null, requestCode);
-    }
-
-    /**
-     * 携带数据的页面跳转并有请求值
-     *
-     * @param clz         要跳转的Activity类
-     * @param bundle      bundle
-     * @param requestCode 请求值
-     */
-    public void startActivityForResult(Class<?> clz, Bundle bundle, int requestCode) {
-        Intent intent = new Intent(this, clz);
-        if (bundle != null) {
-            intent.putExtras(bundle);
-        }
-        startActivityForResult(intent, requestCode);
     }
 
     /**
