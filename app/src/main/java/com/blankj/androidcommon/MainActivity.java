@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.blankj.common.ui.dialog.BaseAlertDialog;
 import com.blankj.common.ui.dialog.BaseDialog;
+import com.blankj.common.ui.dialog.LoadingDialog;
 import com.blankj.utilcode.util.Utils;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,24 +37,8 @@ public class MainActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                BaseAlertDialog baseAlertDialog = new BaseAlertDialog();
-                baseAlertDialog.setOnCreateBuildListener(new BaseAlertDialog.OnCreateBuilderListener() {
-                    @Override
-                    public void onCreateBuilder(BaseDialog.Builder builder) {
-                        builder.setPositiveButton("ok", new BaseDialog.OnClickListener() {
-                            @Override
-                            public void onClick(Dialog dialog) {
-                                dialog.dismiss();
-                            }
-                        }).setNegativeButton("cancel", new BaseDialog.OnClickListener() {
-                            @Override
-                            public void onClick(Dialog dialog) {
-                                dialog.dismiss();
-                            }
-                        });
-                    }
-                });
-                baseAlertDialog.show();
+                LoadingDialog loadingDialog = new LoadingDialog();
+                loadingDialog.show(getSupportFragmentManager(), "loading");
             }
         }, 1000);
 

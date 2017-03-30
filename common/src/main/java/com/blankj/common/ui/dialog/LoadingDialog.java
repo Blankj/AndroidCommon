@@ -18,7 +18,7 @@ import com.blankj.common.R;
  * </pre>
  */
 public class LoadingDialog extends BaseDialog {
-    private TextView tvLoadingTips;
+    private TextView  tvLoadingTips;
     private ImageView ivLoadingIc;
 
     @Override
@@ -28,8 +28,9 @@ public class LoadingDialog extends BaseDialog {
 
     @Override
     protected void build(Builder builder) {
-        builder.setBackgroundDrawableResource(R.color.white_light)
-                .setCanceledOnTouchOutside(false);
+        builder.setBackgroundDrawableResource(R.drawable.shape_dialog)
+                .setCanceledOnTouchOutside(false)
+                .setWidth(0.6f);
     }
 
     @Override

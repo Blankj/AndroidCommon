@@ -24,7 +24,7 @@ public class BaseAlertDialog extends BaseDialog {
     }
 
     @Override
-    protected int bindContentView() {
+    protected int bindContentLayout() {
         return R.layout.dialog_alert;
     }
 
@@ -46,9 +46,5 @@ public class BaseAlertDialog extends BaseDialog {
     protected void setContentView(View contentView) {
         tvAlertMessage = (TextView) contentView.findViewById(R.id.tv_alert_message);
         tvAlertMessage.setText("message");
-    }
-
-    public void show() {
-        super.show("BaseAlertDialog");
     }
 }

@@ -18,9 +18,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.ecarx.thememanager.R;
+import com.blankj.common.R;
 
 /**
  * <pre>
@@ -66,9 +67,9 @@ public abstract class BaseDialog extends DialogFragment {
         tvDialogPositive = (TextView) dialogView.findViewById(R.id.tv_dialog_positive);
 
         contentView = LayoutInflater.from(mContext).inflate(bindContentLayout(), null);
+        setContentView(contentView);
         flDialogContent.addView(contentView);
         build(new Builder());
-        setContentView(contentView);
         return dialog;
     }
 
@@ -260,9 +261,5 @@ public abstract class BaseDialog extends DialogFragment {
 
     public interface OnClickListener {
         void onClick(Dialog dialog);
-    }
-
-    protected void show(String tag) {
-        show(getActivity().getSupportFragmentManager(), tag);
     }
 }
