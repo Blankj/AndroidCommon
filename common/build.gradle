@@ -22,7 +22,6 @@ dependencies {
     provided rootProject.ext.deps.supportV4
     provided rootProject.ext.deps.appcompatV7
     testCompile rootProject.ext.deps.junit
-    compile project(':utilcode')
 }
 //apply from: "https://raw.githubusercontent.com/xiaopansky/android-library-publish-to-jcenter/master/bintrayUpload.gradle"
 //gradlew bintrayUpload

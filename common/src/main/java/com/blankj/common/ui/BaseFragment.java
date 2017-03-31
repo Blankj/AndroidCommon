@@ -5,11 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.blankj.utilcode.util.LogUtils;
 
 /**
  * <pre>
@@ -21,6 +20,8 @@ import com.blankj.utilcode.util.LogUtils;
  */
 public abstract class BaseFragment extends Fragment
         implements View.OnClickListener {
+
+    private static final String TAG = "BaseFragment";
 
     private static final String STATE_SAVE_IS_HIDDEN = "STATE_SAVE_IS_HIDDEN";
     /**
@@ -47,7 +48,7 @@ public abstract class BaseFragment extends Fragment
             }
             ft.commit();
         }
-        LogUtils.w("onCreate");
+        Log.d(TAG, "onCreate: ");
     }
 
     @Nullable
@@ -55,7 +56,7 @@ public abstract class BaseFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setRetainInstance(true);
         contentView = inflater.inflate(bindLayout(), null);
-        LogUtils.w("onCreateView");
+        Log.d(TAG, "onCreateView: ");
         return contentView;
     }
 
@@ -65,7 +66,7 @@ public abstract class BaseFragment extends Fragment
         Bundle bundle = getArguments();
         initData(bundle);
         initView(contentView);
-        LogUtils.w("onViewCreated");
+        Log.d(TAG, "onViewCreated: ");
     }
 
     @Override
@@ -73,7 +74,7 @@ public abstract class BaseFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
         mActivity = (BaseActivity) getActivity();
         doBusiness(mActivity);
-        LogUtils.w("onViewCreated");
+        Log.d(TAG, "onActivityCreated: ");
     }
 
 
@@ -135,13 +136,13 @@ public abstract class BaseFragment extends Fragment
             ((ViewGroup) contentView.getParent()).removeView(contentView);
         }
         super.onDestroyView();
-        LogUtils.w("onDestroyView");
+        Log.d(TAG, "onDestroyView: ");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LogUtils.w("onDestroy");
+        Log.d(TAG, "onDestroy: ");
     }
 
     @Override

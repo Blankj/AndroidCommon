@@ -16,7 +16,7 @@
         android:src="@drawable/ic_dialog_loading"/>
 
     <TextView
-        android:id="@+id/tv_loading_tips"
+        android:id="@+id/tv_loading_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="loading..."

@@ -1,5 +1,6 @@
 package com.blankj.common.ui.dialog;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -18,8 +19,6 @@ import com.blankj.common.R;
  * </pre>
  */
 public class LoadingDialog extends BaseDialog {
-    private TextView  tvLoadingTips;
-    private ImageView ivLoadingIc;
 
     @Override
     protected int bindContentLayout() {
@@ -27,17 +26,18 @@ public class LoadingDialog extends BaseDialog {
     }
 
     @Override
-    protected void build(Builder builder) {
+    protected void setContentView(View contentView, Builder builder) {
         builder.setBackgroundDrawableResource(R.drawable.shape_dialog)
-                .setCanceledOnTouchOutside(false)
-                .setWidth(0.6f);
-    }
+                .setCanceled(false)
+                .setWidth(0.4f);
 
-    @Override
-    protected void setContentView(View contentView) {
-        contentView.findViewById(R.id.tv_loading_tips);
-        tvLoadingTips = (TextView) contentView.findViewById(R.id.tv_loading_tips);
-        ivLoadingIc = (ImageView) contentView.findViewById(R.id.iv_loading_ic);
+        TextView tvLoadingMessage = (TextView) contentView.findViewById(R.id.tv_loading_message);
+        ImageView ivLoadingIc = (ImageView) contentView.findViewById(R.id.iv_loading_ic);
+
+        CharSequence msg = builder.getMessage();
+        if (!TextUtils.isEmpty(msg)) {
+            tvLoadingMessage.setText(msg);
+        }
 
         RotateAnimation rotateAnimation = new RotateAnimation(0, 360,
                 Animation.RELATIVE_TO_SELF, 0.5f,
@@ -46,7 +46,7 @@ public class LoadingDialog extends BaseDialog {
         rotateAnimation.setInterpolator(new LinearInterpolator());
         rotateAnimation.setRepeatCount(-1);
         ivLoadingIc.setAnimation(rotateAnimation);
-
     }
+
 
 }

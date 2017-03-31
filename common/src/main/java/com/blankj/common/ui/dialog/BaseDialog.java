@@ -2,23 +2,23 @@ package com.blankj.common.ui.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.FloatRange;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.blankj.common.R;
@@ -33,11 +33,6 @@ import com.blankj.common.R;
  */
 public abstract class BaseDialog extends DialogFragment {
 
-    private static final String TAG = "BaseDialog";
-    public static final byte POSITIVE = -1;
-    public static final byte NEGATIVE = -2;
-    public static final byte NEUTRAL = -3;
-
     private Context mContext;
     private Window window;
     private Dialog dialog;
@@ -51,6 +46,12 @@ public abstract class BaseDialog extends DialogFragment {
     private TextView tvDialogNeutral;
     private View viewDivide2;
     private TextView tvDialogPositive;
+
+    public Builder getBuilder() {
+        return mBuilder;
+    }
+
+    private Builder mBuilder = new Builder();
 
     @NonNull
     @Override
@@ -67,160 +68,246 @@ public abstract class BaseDialog extends DialogFragment {
         tvDialogPositive = (TextView) dialogView.findViewById(R.id.tv_dialog_positive);
 
         contentView = LayoutInflater.from(mContext).inflate(bindContentLayout(), null);
-        setContentView(contentView);
         flDialogContent.addView(contentView);
-        build(new Builder());
+        dialog = new AlertDialog.Builder(mContext)
+                .setView(dialogView)
+                .create();
+        dialog.setOnShowListener(mListener);
+        window = dialog.getWindow();
         return dialog;
     }
 
+    private DialogInterface.OnShowListener mListener = new DialogInterface.OnShowListener() {
+        @Override
+        public void onShow(DialogInterface dialog) {
+            setContentView(contentView, mBuilder);
+            mBuilder.apply();
+        }
+    };
+
     protected abstract int bindContentLayout();
 
-    protected abstract void build(Builder builder);
 
-    protected abstract void setContentView(View contentView);
+    protected abstract void setContentView(View contentView, Builder builder);
 
     public class Builder {
 
-        Builder() {
-            dialog = new AlertDialog.Builder(mContext)
-                    .setView(dialogView)
-                    .create();
-            window = dialog.getWindow();
-            dialog.setContentView(dialogView);
-        }
+        private float widthScale = -1;
+        private float heightScale = -1;
+        private int width = -1;
+        private int height = -1;
+        private int gravity = -1;
+        private float alpha = -1;
+        private Drawable drawable;
+        private int resId = -1;
+        private boolean cancelable = true;
+        private boolean cancel = true;
+        private CharSequence title;
+        private int titleGravity = -1;
+        private int divide0Color = -1;
+        private CharSequence positiveText;
+        private OnClickListener positiveListener;
+        private int divide1Color = -1;
+        private CharSequence negativeText;
+        private OnClickListener negativeListener;
+        private int divide2Color = -1;
+        private CharSequence neutralText;
+        private OnClickListener neutralListener;
 
         public Builder setSize(@FloatRange(from = 0, to = 1, fromInclusive = false) float widthScale,
                                @FloatRange(from = 0, to = 1, fromInclusive = false) float heightScale) {
-            WindowManager.LayoutParams lp = window.getAttributes();
-            WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-            DisplayMetrics dm = new DisplayMetrics();
-            windowManager.getDefaultDisplay().getMetrics(dm);
-            lp.width = (int) (dm.widthPixels * widthScale);
-            lp.height = (int) (dm.heightPixels * heightScale);
+            this.widthScale = widthScale;
+            this.heightScale = heightScale;
             return this;
         }
 
         public Builder setWidth(@FloatRange(from = 0, to = 1, fromInclusive = false) float widthScale) {
-            WindowManager.LayoutParams lp = window.getAttributes();
-            WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-            DisplayMetrics dm = new DisplayMetrics();
-            windowManager.getDefaultDisplay().getMetrics(dm);
-            lp.width = (int) (dm.widthPixels * widthScale);
+            this.widthScale = widthScale;
             return this;
         }
 
         public Builder setHeight(@FloatRange(from = 0, to = 1, fromInclusive = false) float heightScale) {
-            WindowManager.LayoutParams lp = window.getAttributes();
-            WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-            DisplayMetrics dm = new DisplayMetrics();
-            windowManager.getDefaultDisplay().getMetrics(dm);
-            lp.height = (int) (dm.heightPixels * heightScale);
+            this.heightScale = heightScale;
             return this;
         }
 
-        public Builder setWidth(int width) {
-            window.getAttributes().width = width;
+        public Builder setWidth(@IntRange(from = 8) int width) {
+            this.width = width;
             return this;
         }
 
-        public Builder setHeight(int height) {
-            window.getAttributes().height = height;
+        public Builder setHeight(@IntRange(from = 8) int height) {
+            this.height = height;
             return this;
         }
 
         public Builder setGravity(int gravity) {
-            window.setGravity(gravity);
-            return this;
-        }
-
-        public Builder setCanceledOnTouchOutside(boolean cancel){
-            dialog.setCanceledOnTouchOutside(cancel);
+            this.gravity = gravity;
             return this;
         }
 
         public Builder setAlpha(@FloatRange(from = 0, to = 1, fromInclusive = false) float alpha) {
-            window.getAttributes().alpha = alpha;
+            this.alpha = alpha;
             return this;
         }
 
         public Builder setBackGround(Drawable drawable) {
-            window.setBackgroundDrawable(drawable);
+            this.drawable = drawable;
             return this;
         }
 
         public Builder setBackgroundDrawableResource(@DrawableRes int resId) {
-            window.setBackgroundDrawableResource(resId);
+            this.resId = resId;
+            return this;
+        }
+
+        public Builder setCanceled(boolean cancelable) {
+            this.cancelable = cancelable;
+            return this;
+        }
+
+        public Builder setCanceledOnTouchOutside(boolean cancel) {
+            this.cancel = cancel;
             return this;
         }
 
         public Builder setTitle(CharSequence title) {
-            if (!TextUtils.isEmpty(title)) {
-                tvDialogTitle.setVisibility(View.VISIBLE);
-                tvDialogTitle.setText(title);
-            }
+            this.title = title;
             return this;
         }
 
         public Builder setTitle(CharSequence title, int gravity) {
-            if (!TextUtils.isEmpty(title)) {
-                tvDialogTitle.setVisibility(View.VISIBLE);
-                tvDialogTitle.setText(title);
-                tvDialogTitle.setGravity(gravity);
-            }
+            this.title = title;
+            this.titleGravity = gravity;
             return this;
         }
 
         public Builder setDivide0(@ColorInt int color) {
-            viewDivide0.setVisibility(View.VISIBLE);
-            viewDivide0.setBackgroundColor(color);
+            this.divide0Color = color;
             return this;
         }
 
         public Builder setPositiveButton(@StringRes int textId, final OnClickListener listener) {
-            return setPositiveButton(mContext.getText(textId), listener);
+            this.positiveText = mContext.getText(textId);
+            this.positiveListener = listener;
+            return this;
         }
 
         public Builder setPositiveButton(CharSequence text, OnClickListener listener) {
-            if (!TextUtils.isEmpty(text)) {
-                setButton(POSITIVE, text, listener);
-            }
+            this.positiveText = text;
+            this.positiveListener = listener;
             return this;
         }
 
         public Builder setDivide1(@ColorInt int color) {
-            viewDivide1.setVisibility(View.VISIBLE);
-            viewDivide1.setBackgroundColor(color);
+            this.divide1Color = color;
             return this;
         }
 
         public Builder setNegativeButton(@StringRes int textId, OnClickListener listener) {
-            return setNegativeButton(mContext.getText(textId), listener);
+            this.negativeText = mContext.getText(textId);
+            this.negativeListener = listener;
+            return this;
         }
 
         public Builder setNegativeButton(CharSequence text, OnClickListener listener) {
-            if (!TextUtils.isEmpty(text)) {
-                setButton(NEGATIVE, text, listener);
-            }
+            this.negativeText = text;
+            this.negativeListener = listener;
             return this;
         }
 
         public Builder setDivide2(@ColorInt int color) {
-            viewDivide2.setVisibility(View.VISIBLE);
-            viewDivide2.setBackgroundColor(color);
+            divide2Color = color;
             return this;
         }
 
         public Builder setNeutralButton(@StringRes int textId, OnClickListener listener) {
-            return setNeutralButton(mContext.getText(textId), listener);
+            this.negativeText = mContext.getText(textId);
+            this.negativeListener = listener;
+            return this;
         }
 
         public Builder setNeutralButton(CharSequence text, OnClickListener listener) {
-            if (!TextUtils.isEmpty(text)) {
-                setButton(NEUTRAL, text, listener);
-            }
+            this.negativeText = text;
+            this.negativeListener = listener;
             return this;
         }
+
+        private void apply() {
+            if (widthScale != -1) {
+                window.getAttributes().width = (int) (widthScale * getScreenWidth());
+            } else if (width != -1) {
+                window.getAttributes().width = width;
+            }
+            if (heightScale != -1) {
+                window.getAttributes().height = (int) (heightScale * getScreenHeight());
+            } else if (height != -1) {
+                window.getAttributes().height = height;
+            }
+            if (gravity != -1) {
+                window.setGravity(gravity);
+            }
+            if (alpha != -1) {
+                window.getAttributes().alpha = alpha;
+            }
+            if (drawable != null) {
+                window.setBackgroundDrawable(drawable);
+            }
+            if (resId != -1) {
+                window.setBackgroundDrawableResource(resId);
+            }
+            if (!cancelable) {
+                setCancelable(false);
+            }
+            if (!cancel) {
+                dialog.setCanceledOnTouchOutside(false);
+            }
+            if (title != null) {
+                tvDialogTitle.setVisibility(View.VISIBLE);
+                tvDialogTitle.setText(title);
+                if (titleGravity != -1) {
+                    tvDialogTitle.setGravity(titleGravity);
+                }
+            }
+            if (divide0Color != -1) {
+                viewDivide0.setVisibility(View.VISIBLE);
+                viewDivide0.setBackgroundColor(divide0Color);
+            }
+            if (!isSpace((String) positiveText)) {
+                setButton(POSITIVE, positiveText, positiveListener);
+            }
+            if (divide1Color != -1) {
+                viewDivide1.setVisibility(View.VISIBLE);
+                viewDivide1.setBackgroundColor(divide1Color);
+            }
+            if (!isSpace((String) negativeText)) {
+                setButton(NEGATIVE, negativeText, negativeListener);
+            }
+            if (divide2Color != -1) {
+                viewDivide2.setVisibility(View.VISIBLE);
+                viewDivide2.setBackgroundColor(divide2Color);
+            }
+            if (!isSpace((String) neutralText)) {
+                setButton(NEUTRAL, neutralText, neutralListener);
+            }
+        }
+
+        private CharSequence message;
+
+        public Builder setMessage(String message) {
+            this.message = message;
+            return this;
+        }
+
+        public CharSequence getMessage() {
+            return message;
+        }
+
     }
+
+    private final byte POSITIVE = -1;
+    private final byte NEGATIVE = -2;
+    private final byte NEUTRAL = -3;
 
     private void setButton(int which, CharSequence text, final OnClickListener listener) {
         TextView tvWhich;
@@ -261,5 +348,29 @@ public abstract class BaseDialog extends DialogFragment {
 
     public interface OnClickListener {
         void onClick(Dialog dialog);
+    }
+
+    private int getScreenWidth() {
+        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics dm = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(dm);
+        return dm.widthPixels;
+    }
+
+    private int getScreenHeight() {
+        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics dm = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(dm);
+        return dm.heightPixels;
+    }
+
+    private static boolean isSpace(String s) {
+        if (s == null) return true;
+        for (int i = 0, len = s.length(); i < len; ++i) {
+            if (!Character.isWhitespace(s.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
