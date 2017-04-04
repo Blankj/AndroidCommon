@@ -65,7 +65,7 @@ public abstract class BaseFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = getArguments();
         initData(bundle);
-        initView(contentView);
+        initView(savedInstanceState, contentView);
         Log.d(TAG, "onViewCreated: ");
     }
 
@@ -95,7 +95,7 @@ public abstract class BaseFragment extends Fragment
     /**
      * 初始化view
      */
-    public abstract void initView(final View view);
+    public abstract void initView(Bundle savedInstanceState, final View view);
 
     /**
      * 业务操作

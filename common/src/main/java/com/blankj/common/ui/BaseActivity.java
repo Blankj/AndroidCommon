@@ -60,7 +60,7 @@ public abstract class BaseActivity extends AppCompatActivity
                 }
             }
             setContentView(contentView);
-            initView(contentView);
+            initView(savedInstanceState, contentView);
             doBusiness(this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,7 +85,7 @@ public abstract class BaseActivity extends AppCompatActivity
     /**
      * 初始化view
      */
-    public abstract void initView(final View view);
+    public abstract void initView(Bundle savedInstanceState, final View view);
 
     /**
      * 业务操作
