@@ -1,1 +1,1 @@
-include ':app', ':common', ':utilcode'
+include ':app', 'common'
