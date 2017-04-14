@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:background="@color/black"
         android:orientation="vertical"
-        android:padding="@dimen/spacing_small"/>
+        android:padding="@dimen/spacing_8"/>
 
     <View
         android:id="@+id/view_dialog_divide0"

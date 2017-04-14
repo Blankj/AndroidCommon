@@ -12,7 +12,7 @@
         android:id="@+id/iv_loading_ic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_normal"
+        android:padding="@dimen/spacing_16"
         android:src="@drawable/ic_dialog_loading"/>
 
     <TextView
@@ -21,6 +21,6 @@
         android:layout_height="wrap_content"
         android:text="loading..."
         android:textColor="@color/black_light"
-        android:textSize="@dimen/font_normal"/>
+        android:textSize="@dimen/font_32"/>
 
 </LinearLayout>
